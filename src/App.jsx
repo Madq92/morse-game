@@ -14,49 +14,30 @@ export default function App() {
   }, []);
 
   const {
-    output,
-    speed,
-    activePath,
-    isPressing,
-    floatingLetters,
-    bootPhase,
-    pressStart,
-    pressEnd,
-    setSpeed,
-    startBoot,
+    output, speed, activePath, isPressing, floatingLetters,
+    bootPhase, mode, currentInput, pressStart, pressEnd, setSpeed, switchMode, startBoot,
   } = useGameState({ onSymbol: handleSymbol });
 
   const appRef = useRef(null);
 
-  // Start boot animation on mount
-  useEffect(() => {
-    return startBoot();
-  }, [startBoot]);
+  useEffect(() => { return startBoot(); }, [startBoot]);
 
-  // Global keyboard listener for spacebar
   const keyDownRef = useRef(false);
+  const handleKeyDown = useCallback((e) => {
+    if (e.code === 'Space' && !keyDownRef.current && bootPhase === 'live') {
+      e.preventDefault();
+      keyDownRef.current = true;
+      pressStart();
+    }
+  }, [pressStart, bootPhase]);
 
-  const handleKeyDown = useCallback(
-    (e) => {
-      if (e.code === 'Space' && !keyDownRef.current && bootPhase === 'live') {
-        e.preventDefault();
-        keyDownRef.current = true;
-        pressStart();
-      }
-    },
-    [pressStart, bootPhase]
-  );
-
-  const handleKeyUp = useCallback(
-    (e) => {
-      if (e.code === 'Space' && keyDownRef.current) {
-        e.preventDefault();
-        keyDownRef.current = false;
-        pressEnd();
-      }
-    },
-    [pressEnd]
-  );
+  const handleKeyUp = useCallback((e) => {
+    if (e.code === 'Space' && keyDownRef.current) {
+      e.preventDefault();
+      keyDownRef.current = false;
+      pressEnd();
+    }
+  }, [pressEnd]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -75,7 +56,7 @@ export default function App() {
       <div className="main-column">
         <OutputScreen output={output} />
         <SpeedBar speed={speed} onChange={setSpeed} disabled={!isBootDone} />
-        <Board activePath={activePath} isPressing={isPressing} bootPhase={bootPhase}>
+        <Board activePath={activePath} isPressing={isPressing} mode={mode} currentInput={currentInput} bootPhase={bootPhase}>
           <FloatingLetters letters={floatingLetters} />
           <PressKey
             isPressing={isPressing}
@@ -83,6 +64,21 @@ export default function App() {
             onPressEnd={pressEnd}
             disabled={!isBootDone}
           />
+          {/* Mode toggle */}
+          <div className="mode-toggle">
+            <button
+              type="button"
+              className={`mode-btn ${mode === 'letter' ? 'is-active' : ''}`}
+              disabled={!isBootDone}
+              onClick={() => switchMode('letter')}
+            >ABC</button>
+            <button
+              type="button"
+              className={`mode-btn ${mode === 'number' ? 'is-active' : ''}`}
+              disabled={!isBootDone}
+              onClick={() => switchMode('number')}
+            >123</button>
+          </div>
         </Board>
       </div>
       <div className="meta-overlay">
