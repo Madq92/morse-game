@@ -31,11 +31,11 @@ const nodeDefs = [
   { id: 'Q', letter: 'Q', lampType: 'square', orientation: 'horizontal', labelPosition: 'below', x: 12, y: 24 },
   { id: 'G', letter: 'G', lampType: 'circle', labelPosition: 'right', x: 25, y: 24, dot: 'Z', dash: 'Q' },
   { id: 'U', letter: 'U', lampType: 'square', orientation: 'vertical', labelPosition: 'left', x: 74, y: 24, dot: 'F' },
-  { id: 'V', letter: 'V', lampType: 'square', orientation: 'vertical', labelPosition: 'below', x: 85, y: 24 },
-  { id: 'Z', letter: 'Z', lampType: 'circle', labelPosition: 'below', x: 25, y: 34 },
-  { id: 'F', letter: 'F', lampType: 'circle', labelPosition: 'below', x: 74, y: 34 },
+  { id: 'V', letter: 'V', lampType: 'square', orientation: 'vertical', labelPosition: 'left', x: 85, y: 24 },
+  { id: 'Z', letter: 'Z', lampType: 'circle', labelPosition: 'right', x: 25, y: 34 },
+  { id: 'F', letter: 'F', lampType: 'circle', labelPosition: 'left', x: 74, y: 34 },
   { id: 'Y', letter: 'Y', lampType: 'square', orientation: 'horizontal', labelPosition: 'below', x: 12, y: 50 },
-  { id: 'K', letter: 'K', lampType: 'square', orientation: 'horizontal', labelPosition: 'above', x: 25, y: 50, dot: 'C', dash: 'Y' },
+  { id: 'K', letter: 'K', lampType: 'square', orientation: 'horizontal', labelPosition: 'below', x: 25, y: 50, dot: 'C', dash: 'Y' },
   { id: 'N', letter: 'N', lampType: 'circle', labelPosition: 'right', x: 38, y: 50, dot: 'D', dash: 'K' },
   { id: 'A', letter: 'A', lampType: 'square', orientation: 'vertical', labelPosition: 'left', x: 62, y: 50, dot: 'R', dash: 'W' },
   { id: 'R', letter: 'R', lampType: 'circle', labelPosition: 'below', x: 74, y: 50, dot: 'L' },
@@ -45,31 +45,12 @@ const nodeDefs = [
   { id: 'D', letter: 'D', lampType: 'circle', labelPosition: 'right', x: 38, y: 72, dot: 'B', dash: 'X' },
   { id: 'W', letter: 'W', lampType: 'square', orientation: 'vertical', labelPosition: 'left', x: 62, y: 72, dot: 'P', dash: 'J' },
   { id: 'P', letter: 'P', lampType: 'circle', labelPosition: 'below', x: 74, y: 72 },
-  { id: 'B', letter: 'B', lampType: 'circle', labelPosition: 'below', x: 38, y: 84 },
-  { id: 'J', letter: 'J', lampType: 'square', orientation: 'vertical', labelPosition: 'below', x: 62, y: 84 },
+  { id: 'B', letter: 'B', lampType: 'circle', labelPosition: 'right', x: 38, y: 84 },
+  { id: 'J', letter: 'J', lampType: 'square', orientation: 'vertical', labelPosition: 'left', x: 62, y: 84 },
 ];
 
 // Build the node map and tree links
 export const nodes = Object.fromEntries(nodeDefs.map((n) => [n.id, n]));
-
-// Tree: for each node, store dot/dash children at the node level
-export function getChildNode(nodeId, symbol) {
-  const node = nodes[nodeId];
-  if (!node) return null;
-  const childId = symbol === '.' ? node.dot : node.dash;
-  return childId ? nodes[childId] : null;
-}
-
-// Traverse a full path of symbols to get the letter
-export function traversePath(path) {
-  let current = nodes['root'];
-  for (const sym of path) {
-    const childId = sym === '.' ? current.dot : current.dash;
-    if (!childId) return null;
-    current = nodes[childId];
-  }
-  return current;
-}
 
 // Board trace connections: parent -> child SVG paths (y inverted: svg_y = 100 - data_y)
 export const boardConnections = {
@@ -101,18 +82,12 @@ export const boardConnections = {
   'D->X': 'M38,28 H25',
 };
 
-// Board decoration: mounting holes, vias, etc.
+// Board decoration: mounting holes
 export const mountingHoles = [
   { cx: 5, cy: 8, className: 'hole-tl' },
   { cx: 95, cy: 8, className: 'hole-tr' },
   { cx: 5, cy: 132, className: 'hole-bl' },
   { cx: 95, cy: 132, className: 'hole-br' },
-];
-
-export const vias = [
-  { cx: 5, cy: 22 }, { cx: 5, cy: 60 }, { cx: 5, cy: 100 },
-  { cx: 95, cy: 22 }, { cx: 95, cy: 60 }, { cx: 95, cy: 100 },
-  { cx: 50, cy: 134 },
 ];
 
 // Boot sequence stages: {at: ms from start, stage: string}
@@ -123,6 +98,3 @@ export const bootStages = [
   { at: 1900, stage: 'ready' },
   { at: 2500, stage: 'live' },
 ];
-
-// All lamp IDs for boot animation delay calculation
-export const allLampIds = nodeDefs.filter((n) => n.id !== 'root').map((n) => n.id);
