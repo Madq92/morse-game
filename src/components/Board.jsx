@@ -87,16 +87,12 @@ function BoardSvg({ activePath, isPressing }) {
         );
       })}
 
-      {/* Highlight lines (sheen) */}
-      {Object.entries(boardConnections).map(([key, d]) => (
-        <path key={`hl-${key}`} d={d} className="line-highlight" vectorEffect="non-scaling-stroke" />
-      ))}
-
-      {/* Antenna */}
+      {/* Antenna - extends downward from root at bottom of board */}
       <g className={`antenna ${isPressing ? 'live' : ''}`}>
-        <line x1="50" y1={sy(10)} x2="50" y2={sy(10) - 8} className="antenna-stem" stroke="#d2e6e2d9" strokeWidth="0.6" />
-        <polygon points={`48,${sy(10)} 52,${sy(10)} 50,${sy(10) - 6}`} fill="#a0c8c899" />
+        <line x1="50" y1={sy(10)} x2="50" y2={sy(10) + 8} className="antenna-stem" stroke="#d2e6e2d9" strokeWidth="0.6" />
+        <polygon points={`48,${sy(10)} 52,${sy(10)} 50,${sy(10) + 6}`} fill="#a0c8c899" />
         <circle cx="50" cy={sy(10)} r="0.8" className="antenna-base" />
+          <circle cx="50" cy={sy(2)} r="0.8" className="antenna-base" />
       </g>
 
       {/* Lamps - all rendered in SVG for perfect alignment */}
@@ -114,28 +110,28 @@ function BoardSvg({ activePath, isPressing }) {
         <circle cx="78" cy="120" r="3.6" fill="none" className="speaker-wave wave-1" />
         <circle cx="78" cy="120" r="7" fill="none" className="speaker-wave wave-2" />
         <circle cx="78" cy="120" r="10.5" fill="none" className="speaker-wave wave-3" />
-        <text x="81" y="118" className="component-label">SPKR</text>
+        <text x="75" y="113" className="component-label">SPK</text>
       </g>
 
       {/* Battery component */}
-      <g className="component component-battery">
-        <rect x="15" y="116" width="14" height="8" rx="1" />
-        <line x1="18" y1="118" x2="18" y2="122" />
-        <line x1="21" y1="118" x2="21" y2="122" />
-        <line x1="24" y1="118" x2="24" y2="122" />
-        <text x="33" y="117" className="component-label">BATT</text>
-      </g>
+      {/*<g className="component component-battery">*/}
+      {/*  <rect x="15" y="116" width="14" height="8" rx="1" />*/}
+      {/*  <line x1="18" y1="118" x2="18" y2="122" />*/}
+      {/*  <line x1="21" y1="118" x2="21" y2="122" />*/}
+      {/*  <line x1="24" y1="118" x2="24" y2="122" />*/}
+      {/*  <text x="18" y="115" className="component-label">BATT</text>*/}
+      {/*</g>*/}
 
       {/* IC component */}
-      <g className="component component-ic">
-        <rect x="40" y="118" width="16" height="10" rx="1" />
-        <line x1="42" y1="119" x2="42" y2="127" />
-        <line x1="46" y1="119" x2="46" y2="127" />
-        <line x1="50" y1="119" x2="50" y2="127" />
-        <line x1="54" y1="119" x2="54" y2="127" />
-        <circle cx="42" cy="119" r="0.3" className="component-pin-mark" />
-        <text x="60" y="117" className="component-label">IC-MC</text>
-      </g>
+      {/*<g className="component component-ic">*/}
+      {/*  <rect x="40" y="118" width="16" height="10" rx="1" />*/}
+      {/*  <line x1="42" y1="119" x2="42" y2="127" />*/}
+      {/*  <line x1="46" y1="119" x2="46" y2="127" />*/}
+      {/*  <line x1="50" y1="119" x2="50" y2="127" />*/}
+      {/*  <line x1="54" y1="119" x2="54" y2="127" />*/}
+      {/*  <circle cx="42" cy="119" r="0.3" className="component-pin-mark" />*/}
+      {/*  <text x="60" y="117" className="component-label">IC-MC</text>*/}
+      {/*</g>*/}
 
       {/* Mounting holes */}
       {mountingHoles.map((h, i) => (
@@ -143,15 +139,15 @@ function BoardSvg({ activePath, isPressing }) {
       ))}
 
       {/* Vias */}
-      <g className="vias">
-        {vias.map((v, i) => (
-          <circle key={`via-${i}`} cx={v.cx} cy={v.cy} r="0.8" />
-        ))}
-      </g>
+      {/*<g className="vias">*/}
+      {/*  {vias.map((v, i) => (*/}
+      {/*    <circle key={`via-${i}`} cx={v.cx} cy={v.cy} r="0.8" />*/}
+      {/*  ))}*/}
+      {/*</g>*/}
 
       {/* Silkscreen text */}
-      <text x="50" y="3" className="silkscreen silkscreen-title" textAnchor="middle">MORSE DECODER</text>
-      <text x="50" y="137" className="silkscreen silkscreen-brand" textAnchor="middle">SOFTCORE · PCB</text>
+      {/*<text x="50" y="3" className="silkscreen silkscreen-title" textAnchor="middle">MORSE DECODER</text>*/}
+      {/*<text x="50" y="137" className="silkscreen silkscreen-brand" textAnchor="middle">SOFTCORE · PCB</text>*/}
     </svg>
   );
 }

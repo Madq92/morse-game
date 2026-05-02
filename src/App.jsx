@@ -86,7 +86,7 @@ export default function App() {
         </Board>
       </div>
       <div className="meta-overlay">
-        <span className="app-version">v1.0.1</span>
+        <span className="app-version">v1.0.0</span>
       </div>
     </div>
   );
