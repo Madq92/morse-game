@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.vite/
+*.local
+.idea
+.claude/settings.local.json
+.DS_Store
