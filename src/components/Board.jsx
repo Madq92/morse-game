@@ -66,9 +66,9 @@ function ModeToggle({mode, onToggle}) {
     const isLetters = mode === 'letters';
     // Housing
     const hx = 5;
-    const hy = 119;
+    const hy = 116.5;
     const hw = 24;
-    const hh = 7.5;
+    const hh = 8;
     // Knob
     const kw = 8.5;
     const kh = 5.5;
@@ -148,13 +148,6 @@ function BoardSvg({activePath, isPressing, nodeDefs, connections, mode, onToggle
                     <SvgLamp key={node.id} node={node} isActive={activeNodeIds.has(node.id)}/>
                 );
             })}
-
-            {/* Root lamp */}
-            {nodeDefs && (() => {
-                const rootNode = treeNodes['root'] || treeNodes['d-root'];
-                if (!rootNode) return null;
-                return <SvgLamp node={rootNode} isActive={activeNodeIds.has(rootNode.id)}/>;
-            })()}
 
             {/* Speaker component */}
             <g className={`component component-speaker ${isPressing ? 'live' : ''}`}>
