@@ -1,5 +1,7 @@
 # Morse Code Decoder
 
+Demo: https://morse-game.oldhorse.tech:1443/
+
 A PCB-themed Morse code practice tool. Press and hold to input dots and dashes, decoded via binary tree traversal.
 
 This project is a copy of the softcorelab project: https://softcorelab.com/.
