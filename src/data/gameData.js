@@ -19,7 +19,7 @@ export function getTiming(baseMs) {
   };
 }
 
-const nodeDefs = [
+export const nodeDefs = [
   { id: 'root', letter: '', lampType: 'root', x: 50, y: 10, dot: 'E', dash: 'T', labelPosition: 'above' },
   { id: 'O', letter: 'O', lampType: 'square', orientation: 'horizontal', labelPosition: 'below', x: 12, y: 10 },
   { id: 'M', letter: 'M', lampType: 'square', orientation: 'horizontal', labelPosition: 'below', x: 25, y: 10, dot: 'G', dash: 'O' },
@@ -98,3 +98,72 @@ export const bootStages = [
   { at: 1900, stage: 'ready' },
   { at: 2500, stage: 'live' },
 ];
+
+// --------------- Digit tree (0-9) — bus-style layout ---------------
+
+export function makeConnections(nodeDefs) {
+  const byId = Object.fromEntries(nodeDefs.map((n) => [n.id, n]));
+  const conns = {};
+  for (const node of nodeDefs) {
+    for (const [branch, childId] of [['dot', node.dot], ['dash', node.dash]]) {
+      if (!childId) continue;
+      const child = byId[childId];
+      const py = 100 - node.y;
+      const cy = 100 - child.y;
+      conns[`${node.id}->${childId}`] = `M${node.x},${py} H${child.x} V${cy}`;
+    }
+  }
+  return conns;
+}
+
+export const digitNodeDefs = [
+  // ---- d-root ----
+  { id: 'd-root', letter: '', lampType: 'circle', x: 50, y: 10, dot: 'cb1', dash: 'db1', labelPosition: 'below' },
+
+  // ---- dash bus
+  { id: 'db1', letter: '', lampType: 'square', orientation: 'horizontal', labelPosition: 'below', x: 45, y: 10, dot: 'd6a', dash: 'db2' },
+  { id: 'db2', letter: '', lampType: 'square', orientation: 'horizontal', labelPosition: 'below', x: 35, y: 10, dot: 'd7a', dash: 'db3' },
+  { id: 'db3', letter: '', lampType: 'square', orientation: 'horizontal', labelPosition: 'below', x: 25, y: 10, dot: 'd8a', dash: 'db4' },
+  { id: 'db4', letter: '', lampType: 'square', orientation: 'horizontal', labelPosition: 'below', x: 15, y: 10, dot: 'd9', dash: 'db5' },
+  { id: 'db5', letter: '0', lampType: 'square', orientation: 'horizontal', labelPosition: 'above', x: 5, y: 10 },
+
+  // ---- dot bus
+  { id: 'cb1', letter: '', lampType: 'circle', labelPosition: 'below', x: 55, y: 10, dot: 'cb2', dash: 'd1a' },
+  { id: 'cb2', letter: '', lampType: 'circle', labelPosition: 'below', x: 65, y: 10, dot: 'cb3', dash: 'd2a' },
+  { id: 'cb3', letter: '', lampType: 'circle', labelPosition: 'below', x: 75, y: 10, dot: 'cb4', dash: 'd3a' },
+  { id: 'cb4', letter: '', lampType: 'circle', labelPosition: 'below', x: 85, y: 10, dot: 'cb5', dash: 'd4' },
+  { id: 'cb5', letter: '5', lampType: 'circle', labelPosition: 'above', x: 95, y: 10 },
+
+  // ---- dash bus → left branches (digits 6,7,8,9) ----
+  { id: 'd6a', letter: '', lampType: 'circle', labelPosition: 'below', x: 45, y: 25, dot: 'd6b' },
+  { id: 'd6b', letter: '', lampType: 'circle', labelPosition: 'below', x: 45, y: 40, dot: 'd6c' },
+  { id: 'd6c', letter: '', lampType: 'circle', labelPosition: 'below', x: 45, y: 55, dot: 'd6' },
+  { id: 'd6',  letter: '6', lampType: 'circle', labelPosition: 'left', x: 45,  y: 70 },
+
+  { id: 'd7a', letter: '', lampType: 'circle', labelPosition: 'below', x: 35, y: 25, dot: 'd7b' },
+  { id: 'd7b', letter: '', lampType: 'circle', labelPosition: 'below', x: 35, y: 40, dot: 'd7' },
+  { id: 'd7',  letter: '7', lampType: 'circle', labelPosition: 'left', x: 35, y: 55 },
+
+  { id: 'd8a', letter: '', lampType: 'circle', labelPosition: 'left', x: 25, y: 25, dot: 'd8' },
+  { id: 'd8',  letter: '8', lampType: 'circle', labelPosition: 'left', x: 25, y: 40 },
+
+  { id: 'd9',  letter: '9', lampType: 'circle', labelPosition: 'left', x: 15, y: 25 },
+
+  // ---- dot bus → right branches (digits 1,2,3,4) ----
+  { id: 'd1a', letter: '', lampType: 'square', orientation: 'horizontal', labelPosition: 'right', x: 55, y: 25, dash: 'd1b' },
+  { id: 'd1b', letter: '', lampType: 'square', orientation: 'horizontal', labelPosition: 'right', x: 55, y: 40, dash: 'd1c' },
+  { id: 'd1c', letter: '', lampType: 'square', orientation: 'horizontal', labelPosition: 'right', x: 55, y: 55, dash: 'd1' },
+  { id: 'd1',  letter: '1', lampType: 'square', orientation: 'horizontal', labelPosition: 'right', x: 55, y: 70 },
+
+  { id: 'd2a', letter: '', lampType: 'square', orientation: 'horizontal', labelPosition: 'right', x: 65, y: 25, dash: 'd2b' },
+  { id: 'd2b', letter: '', lampType: 'square', orientation: 'horizontal', labelPosition: 'right', x: 65, y: 40, dash: 'd2' },
+  { id: 'd2',  letter: '2', lampType: 'square', orientation: 'horizontal', labelPosition: 'right', x: 65, y: 55 },
+
+  { id: 'd3a', letter: '', lampType: 'square', orientation: 'horizontal', labelPosition: 'right', x: 75, y: 25, dash: 'd3' },
+  { id: 'd3',  letter: '3', lampType: 'square', orientation: 'horizontal', labelPosition: 'right', x: 75, y: 40 },
+
+  { id: 'd4',  letter: '4', lampType: 'square', orientation: 'horizontal', labelPosition: 'right', x: 85, y: 25 },
+];
+
+export const digitNodes = Object.fromEntries(digitNodeDefs.map((n) => [n.id, n]));
+export const digitConnections = makeConnections(digitNodeDefs);

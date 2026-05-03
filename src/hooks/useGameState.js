@@ -1,20 +1,9 @@
 import { useState, useRef, useCallback } from 'react';
 import { nodes, getTiming, SPEED_TIERS, bootStages } from '../data/gameData';
 
-// Get array of node IDs from array of symbols
-function getNodePath(symbols) {
-  const path = [];
-  let current = nodes['root'];
-  for (const sym of symbols) {
-    const childId = sym === '.' ? current.dot : current.dash;
-    if (!childId) break;
-    current = nodes[childId];
-    path.push(childId);
-  }
-  return path;
-}
-
-export function useGameState({ onSymbol } = {}) {
+export function useGameState({ onSymbol, treeNodes } = {}) {
+  const tree = treeNodes || nodes;
+  const rootId = tree['root'] ? 'root' : 'd-root';
   const onSymbolRef = useRef(onSymbol);
   onSymbolRef.current = onSymbol;
   const [output, setOutput] = useState([]); // Array of {type:'letter'|'space', value:string}
@@ -25,12 +14,16 @@ export function useGameState({ onSymbol } = {}) {
   const [bootPhase, setBootPhase] = useState('init'); // init|board|silk|trace|ready|live
 
   const timingRef = useRef(getTiming(SPEED_TIERS.medium));
-  const currentNodeRef = useRef(nodes['root']);
+  const currentNodeRef = useRef(tree[rootId]);
   const currentPathRef = useRef([]);
   const pressStartRef = useRef(null);
   const letterTimerRef = useRef(null);
   const wordTimerRef = useRef(null);
   const echoIdRef = useRef(0);
+  const treeRef = useRef(tree);
+  treeRef.current = tree;
+  const rootIdRef = useRef(rootId);
+  rootIdRef.current = rootId;
 
   // Clear all pending timers
   const clearTimers = useCallback(() => {
@@ -46,9 +39,25 @@ export function useGameState({ onSymbol } = {}) {
 
   // Reset to root
   const resetToRoot = useCallback(() => {
-    currentNodeRef.current = nodes['root'];
+    const rid = rootIdRef.current;
+    currentNodeRef.current = treeRef.current[rid];
     currentPathRef.current = [];
-    setActivePath(['root']);
+    setActivePath([rid]);
+  }, []);
+
+  // Walk symbols to get node ID array for active path
+  const getNodePath = useCallback((symbols) => {
+    const t = treeRef.current;
+    const rid = rootIdRef.current;
+    const path = [];
+    let current = t[rid];
+    for (const sym of symbols) {
+      const childId = sym === '.' ? current.dot : current.dash;
+      if (!childId) break;
+      current = t[childId];
+      path.push(childId);
+    }
+    return path;
   }, []);
 
   // Commit the current letter
@@ -71,7 +80,6 @@ export function useGameState({ onSymbol } = {}) {
       };
       setFloatingLetters((prev) => [...prev, echo]);
 
-      // Remove echo after animation
       setTimeout(() => {
         setFloatingLetters((prev) => prev.filter((e) => e.id !== echo.id));
       }, 1200);
@@ -109,9 +117,8 @@ export function useGameState({ onSymbol } = {}) {
     clearTimers();
     pressStartRef.current = performance.now();
     setIsPressing(true);
-    // If at root, activate root path
     if (currentPathRef.current.length === 0) {
-      setActivePath(['root']);
+      setActivePath([rootIdRef.current]);
     }
   }, [clearTimers]);
 
@@ -126,24 +133,22 @@ export function useGameState({ onSymbol } = {}) {
     const { dashThresholdMs } = timingRef.current;
     const symbol = duration >= dashThresholdMs ? '-' : '.';
 
-    // Sound callback
     if (onSymbolRef.current) {
       onSymbolRef.current(symbol);
     }
 
-    // Traverse tree
+    const t = treeRef.current;
     const currentNode = currentNodeRef.current;
     const childId = symbol === '.' ? currentNode.dot : currentNode.dash;
 
-    if (childId && nodes[childId]) {
-      currentNodeRef.current = nodes[childId];
+    if (childId && t[childId]) {
+      currentNodeRef.current = t[childId];
       currentPathRef.current = [...currentPathRef.current, symbol];
-      setActivePath(['root', ...getNodePath(currentPathRef.current)]);
+      setActivePath([rootIdRef.current, ...getNodePath(currentPathRef.current)]);
     }
-    // If no child for this symbol, stay at current node (invalid path)
 
     startCommitTimers();
-  }, [startCommitTimers]);
+  }, [startCommitTimers, getNodePath]);
 
   const setSpeed = useCallback(
     (tier) => {
@@ -177,5 +182,9 @@ export function useGameState({ onSymbol } = {}) {
     pressEnd,
     setSpeed,
     startBoot,
+    commitLetter,
+    commitWord,
+    resetToRoot,
+    clearTimers,
   };
 }

@@ -496,6 +496,89 @@ body::after {
   font-weight: 500;
 }
 
+/* ===== Mode Toggle — slide switch (SVG) ===== */
+.mode-toggle-group {
+  pointer-events: auto;
+}
+
+.mode-toggle-silk {
+  fill: var(--silk-faint);
+  font-family: var(--sans);
+  font-size: 2.2px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  pointer-events: none;
+}
+
+/* Housing — recessed bezel frame */
+.mode-toggle-housing {
+  fill: #0e2626;
+  stroke: var(--pcb-edge);
+  stroke-width: 0.5;
+}
+
+/* Inner channel — dark groove where knob slides */
+.mode-toggle-channel {
+  fill: #051010;
+  stroke: #0000004d;
+  stroke-width: 0.3;
+}
+
+/* Knob positioning — animated slide */
+.mode-toggle-knob {
+  transition: transform 0.18s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+.mode-toggle-knob.left {
+  transform: translateX(7px);
+}
+
+.mode-toggle-knob.right {
+  transform: translateX(18.5px);
+}
+
+/* Knob drop shadow */
+.mode-knob-shadow {
+  fill: #00000073;
+  pointer-events: none;
+}
+
+/* Knob body — raised plastic */
+.mode-knob-body {
+  fill: #1a3030;
+  stroke: #b4dcdc40;
+  stroke-width: 0.45;
+}
+
+/* Knob top bevel — light catch */
+.mode-knob-hl {
+  fill: #ffffff14;
+  pointer-events: none;
+}
+
+/* Knob grip dot */
+.mode-knob-grip {
+  fill: #ffffff0f;
+  pointer-events: none;
+}
+
+/* Boot — hide toggle until live */
+.app.boot-init .mode-toggle-group,
+.app.boot-board .mode-toggle-group,
+.app.boot-silk .mode-toggle-group,
+.app.boot-trace .mode-toggle-group,
+.app.boot-ready .mode-toggle-group {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.app.boot-live .mode-toggle-group,
+.app:not([class*="boot-"]) .mode-toggle-group {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.4s;
+}
+
 /* ===== SVG Lamp Groups ===== */
 .lamp-group {
   pointer-events: none;
@@ -967,6 +1050,15 @@ body:has(.app.boot-board) {
 
   .app .lamp-group {
     opacity: 1 !important;
+  }
+
+  .app .mode-toggle-group {
+    opacity: 1 !important;
+    transition: none;
+  }
+
+  .mode-toggle-knob {
+    transition: none;
   }
 
   .letter-echo {

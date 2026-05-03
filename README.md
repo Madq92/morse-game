@@ -2,6 +2,9 @@
 
 A PCB-themed Morse code practice tool. Press and hold to input dots and dashes, decoded via binary tree traversal.
 
+This project is a copy of the softcorelab project: https://softcorelab.com/.
+
+Vibe coded using Deepseek-v4 and ClaudeCode.
 ## Quick Start
 
 ```bash
